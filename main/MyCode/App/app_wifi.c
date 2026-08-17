@@ -2,6 +2,7 @@
 #include "freertos/task.h"
 #include "esp_log.h"
 #include "drv_wifi.h"
+#include "drv_websoket.h"
 #include "app_wifi.h"
 
 static const char *TAG = "APP_WIFI";
@@ -18,6 +19,6 @@ void App_Wifi_Tick(void)
     uint32_t current_time = pdTICKS_TO_MS(xTaskGetTickCount());
     if (current_time - last_broadcast_time >= 100) {
         last_broadcast_time = current_time;
-        Drv_Wifi_WS_Broadcast_Telemetry(get_webserver_handle());
+        Drv_Websocket_Broadcast_Telemetry(get_webserver_handle());
     }
 }

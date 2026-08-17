@@ -13,7 +13,6 @@
 #define WIFI_AP_MAX_CONNECT   4                  // 最大连接数
 
 void Drv_Wifi_Init(void);
-void Drv_Wifi_WS_Broadcast_Telemetry(httpd_handle_t server);
 httpd_handle_t get_webserver_handle(void);
 
 #endif // __DRV_WIFI_H__
