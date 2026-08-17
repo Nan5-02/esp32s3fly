@@ -4,7 +4,7 @@
   "idf.openOcdConfigs": [
     "board/esp32s3-builtin.cfg"
   ],
-  "idf.port": "detect",
+  "idf.port": "/dev/ttyACM0",
   "idf.currentSetup": "/home/ubuntu24/.espressif/v6.0.2/esp-idf",
   "idf.customExtraVars": {
     "ADF_PATH": "C:\\esp-adf-v2.8",
@@ -15,5 +15,6 @@
     "--background-index",
     "--query-driver=**",
     "--compile-commands-dir=/home/ubuntu24/project/esp32s3_test/build"
-  ]
+  ],
+  "idf.flashType": "UART"
 }
