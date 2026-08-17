@@ -9,6 +9,7 @@
 
 #include "drv_websoket.h"
 
+#if 0  // ===== WebSocket / 网页方案已停用（改用 UDP），以下代码保留备用 =====
 static const char *TAG = "DRONE_WS";
 
 #define WS_MAX_CLIENTS 8
@@ -166,9 +167,14 @@ static esp_err_t ws_send_text_to_fd(httpd_handle_t server, int fd, const char *t
     return httpd_ws_send_frame_async(server, fd, &frame);
 }
 
+/**
+ * @brief 向所有已连接的 WebSocket 客户端广播一条文本消息
+ * @param server HTTP 服务器句柄
+ * @param text 要广播的文本消息
+ */
 static void ws_broadcast_text(httpd_handle_t server, const char *text)
 {
-    if (server == NULL) {
+    if (server == NULL || text == NULL) {
         return;
     }
 
@@ -342,6 +348,12 @@ static const httpd_uri_t ws_uri = {
     .supported_subprotocol = "drone.v1",
 };
 
+
+
+/**
+ * @brief 注册 WebSocket 和 HTTP 端点处理程序
+ * @param server HTTP 服务器句柄
+ */
 void Drv_Websocket_Register_Handlers(httpd_handle_t server)
 {
     httpd_register_uri_handler(server, &index_uri);
@@ -354,6 +366,10 @@ void Drv_Websocket_Register_Handlers(httpd_handle_t server)
     ESP_LOGI(TAG, "Web endpoints registered: /, /telemetry, WS /ws");
 }
 
+/**
+ * @brief 广播遥测数据给所有已连接的 WebSocket 客户端
+ * @param server HTTP 服务器句柄
+ */
 void Drv_Websocket_Broadcast_Telemetry(httpd_handle_t server)
 {
     if (server == NULL) {
@@ -383,3 +399,5 @@ void Drv_Websocket_Broadcast_Telemetry(httpd_handle_t server)
         ws_broadcast_text(server, state);
     }
 }
+#endif  // ===== WebSocket / 网页方案已停用 =====
+

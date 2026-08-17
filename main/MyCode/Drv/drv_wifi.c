@@ -11,22 +11,25 @@
 #include "drv_websoket.h"
 
 static const char *TAG = "DRONE_WIFI";
-static httpd_handle_t MyServer = NULL;
 
 static void wifi_init_softap(void)
 {
+    /*1.初始化WiFi软AP*/
     esp_err_t ret = esp_netif_init();
     if (ret != ESP_OK && ret != ESP_ERR_INVALID_STATE) {
         ESP_ERROR_CHECK(ret);
     }
 
+    /*2.创建默认事件循环*/
     ret = esp_event_loop_create_default();
     if (ret != ESP_OK && ret != ESP_ERR_INVALID_STATE) {
         ESP_ERROR_CHECK(ret);
     }
 
+    /*3.创建默认WiFi AP网络接口*/
     esp_netif_create_default_wifi_ap();
 
+    /*4.初始化WiFi*/
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
 
@@ -41,6 +44,7 @@ static void wifi_init_softap(void)
         },
     };
 
+    //5.设置WiFi模式为AP模式，并配置AP参数
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_AP));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_AP, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
@@ -48,6 +52,9 @@ static void wifi_init_softap(void)
     ESP_LOGI(TAG, "WiFi SoftAP started. SSID:%s, Channel:%d",
              WIFI_AP_SSID, WIFI_AP_CHANNEL);
 }
+
+#if 0  // HTTP/WebSocket 服务已停用（改用 UDP），以下代码保留备用
+static httpd_handle_t MyServer = NULL;
 
 static httpd_handle_t start_webserver(void)
 {
@@ -68,9 +75,11 @@ httpd_handle_t get_webserver_handle(void)
 {
     return MyServer;
 }
+#endif  // HTTP/WebSocket 服务已停用
 
 void Drv_Wifi_Init(void)
 {
+    /* 初始化NVS */
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -78,14 +87,9 @@ void Drv_Wifi_Init(void)
     }
     ESP_ERROR_CHECK(ret);
 
+    /* 初始化WiFi软AP */
     wifi_init_softap();
 
-    MyServer = start_webserver();
-    if (MyServer == NULL) {
-        ESP_LOGE(TAG, "Server startup failed");
-        return;
-    }
-
-    ESP_LOGI(TAG, "=== Drone HTTP Server Ready ===");
+    ESP_LOGI(TAG, "=== Drone WiFi Ready ===");
     ESP_LOGI(TAG, "Connect to WiFi: %s", WIFI_AP_SSID);
 }
